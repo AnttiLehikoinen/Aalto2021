@@ -4,7 +4,7 @@ addpath(genpath('Analysis'));
 addpath(genpath('Dimensions'));
 addpath(genpath('Lib'));
 
-%README
+% README
 % 0. Download and setup EMDtool 3.0.2.dev
 % 1. create model (see e.g. Dimensions/dim_1a.m
 % 2. Run electromagnetic analysis
