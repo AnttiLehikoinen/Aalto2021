@@ -54,46 +54,37 @@ v_coolant = Q / A_coolant; %coolant velocity, m/s
 %heat sink dimensions
 
 h_sink = 265; %heat sink to air
-Wtot = P_Cu + Ptot; %total losses to reject, TODO add inverter losses
+Wtot = P_Cu + Ptot;
 
-%radiator material properties
+%material properties
 k = 205; %aluminum
 rho = 2700;
 
-%honeycomb approximation: two concentric cylinders with a honeycomb-like
-%ducting inbetween, with rectangular cells
-%%{
-d_bore = 0.4; %outer cylinder diameter
-d_bore_inner = 0.3; %inner cylinder diameter
-d_wall = 0.7e-2; %cylinder wall effective thickness
+%honeycomb approximation
+d_bore = 0.4;
+d_bore_inner = 0.3;
+l_sink = 1;
+d_fin = 1e-3;
+fin_spacing = 1.0e-2;
 
-l_sink = 0.4; %axial length
-d_duct = 1e-3; %duct wall thickness
-w_duct = 1.0e-2; %duct size
-
-%ducting efficiency, see
-% https://en.wikipedia.org/wiki/Heat_sink#Fin_efficiency
-L_duct_effective = sqrt(2) * (d_bore/2 - d_bore_inner/2)/2; %distance to closest bore
-mLc = sqrt(2*h_sink/(k*d_duct)) * L_duct_effective;
-eta_fin = tanh(mLc)/mLc;
-
-%computing ducting area
+%computing fin area
 A_bore = pi*(d_bore^2 - d_bore_inner^2)/4; %sink cross-sectional area
-number_of_ducts = A_bore / w_duct^2;
-duct_wall_area = 4*number_of_ducts * w_duct*l_sink; %4 walls per duct
-dT = Wtot / (duct_wall_area * h_sink * eta_fin); %duct wall to ambient temp diff to dump the required heat
+number_of_ducts = A_bore / fin_spacing^2;
+duct_wall_area = 4*number_of_ducts * fin_spacing*l_sink; %4 walls per duct
+dT = Wtot / (duct_wall_area * h_sink)
 
 %computing ducting mass
-duct_wall_volume = duct_wall_area/2*d_duct; %division by 2 here since each wall faces air on both sides
+duct_wall_volume = duct_wall_area/2*d_fin; %division by 2 here since each wall faces air on both sides
 duct_wall_mass = duct_wall_volume * rho;
 
 %bore mass
 m_wall = l_sink * pi*d_bore*d_wall * rho;
 m_wall_inner = l_sink * pi*d_bore_inner*d_wall * rho;
 
-%total mass
 m_radiator = duct_wall_mass + m_wall + m_wall_inner;
-%}
+disp(['Radiator heat rejection performance: ' num2str(Wtot/m_radiator*1e-3) ...
+    'kW of heat 
+
 
 
 %single-bore
@@ -163,12 +154,6 @@ m_wall_inner = l_sink * pi*d_bore_inner*d_wall * rho
 m_radiator = m_fins + m_wall + m_wall_inner
 %}
 
-T_ambient = T_coolant - dT;
-
-disp(['Radiator heat rejection performance: ' num2str(Wtot/m_radiator*1e-3) ...
-    ' kW/kg of heat rejected'])
-disp([' at ' num2str(dT) ' C temperature difference to ambient at ' num2str(T_ambient) ' C'])
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % required air flow
@@ -182,10 +167,8 @@ c_air = 1e3; %specific heat capacity, J/kgK
 q_air = Wtot / (c_air*dT_air); %mass flow
 Q_air = q_air / rho_air; %volumetric flow, m^3/s
 
-A_intake = 0.8*pi*d_bore^2/4; %scoop frontal area
-v_min = Q_air / A_intake; %minimum air velocity
+A_intake = 0.8*pi*d_bore^2/4;
+v_min = Q_air / A_intake;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % drag calculation
-
-%TODO from cooling air speed drop and momentum conservation
