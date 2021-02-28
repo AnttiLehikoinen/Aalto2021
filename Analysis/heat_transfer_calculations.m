@@ -67,7 +67,7 @@ d_bore = 0.4; %outer cylinder diameter
 d_bore_inner = 0.3; %inner cylinder diameter
 d_wall = 0.7e-2; %cylinder wall effective thickness
 
-l_sink = 0.4; %axial length
+l_sink = 0.3; %axial length
 d_duct = 1e-3; %duct wall thickness
 w_duct = 1.0e-2; %duct size
 
